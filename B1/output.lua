@@ -1,0 +1,1 @@
+local function __proto_0(Env,_pU) local K={"print","hello"} local S,U,VA,top={},{},{},-1 local pc=1 local D={[1]=function() S[0]=Env[K[1]] end,[2]=function() S[1]=K[2] end,[3]=function() S[0](S[1]) end,[4]=function() pc=pc+-5 end,[5]=function() return end} while true do local _f=D[pc] if not _f then break end pc=pc+1 _f() end end __proto_0(_ENV or getfenv())
