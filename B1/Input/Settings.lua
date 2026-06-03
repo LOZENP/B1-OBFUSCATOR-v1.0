@@ -1,8 +1,8 @@
 return {
-	["EncryptStrings"]        = true,
-	["ControlFlowFlattening"] = true,
-	["NumberToExpressions"]   = true,
-	["Minify"]                = true,
+	["EncryptStrings"]        = false,
+	["ControlFlowFlattening"] = false,
+	["NumberToExpressions"]   = false,
+	["Minify"]                = false,
 	["Debug"]                 = false,
-	["Watermark"]             = "n1",
+	["Watermark"]             = "B1",
 }

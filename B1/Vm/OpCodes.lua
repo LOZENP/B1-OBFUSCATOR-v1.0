@@ -57,15 +57,15 @@ ops[11] = function(i) -- SELF
 	return ("do S[%d]=S[%d] S[%d]=S[%d][%s] end"):format(i.A+1,i.B.i,i.A,i.B.i,rk(i.C))
 end
 
-ops[12] = function(i) return ("S[%d]=%s+%s"):format(i.A,rk(i.B),rk(i.C)) end -- ADD
-ops[13] = function(i) return ("S[%d]=%s-%s"):format(i.A,rk(i.B),rk(i.C)) end -- SUB
-ops[14] = function(i) return ("S[%d]=%s*%s"):format(i.A,rk(i.B),rk(i.C)) end -- MUL
-ops[15] = function(i) return ("S[%d]=%s/%s"):format(i.A,rk(i.B),rk(i.C)) end -- DIV
-ops[16] = function(i) return ("S[%d]=%s%%%s"):format(i.A,rk(i.B),rk(i.C)) end -- MOD
-ops[17] = function(i) return ("S[%d]=%s^%s"):format(i.A,rk(i.B),rk(i.C)) end -- POW
-ops[18] = function(i) return ("S[%d]=-S[%d]"):format(i.A,i.B.i) end -- UNM
-ops[19] = function(i) return ("S[%d]=not S[%d]"):format(i.A,i.B.i) end -- NOT
-ops[20] = function(i) return ("S[%d]=#S[%d]"):format(i.A,i.B.i) end -- LEN
+ops[12] = function(i) return ("S[%d]=%s+%s"):format(i.A,rk(i.B),rk(i.C)) end
+ops[13] = function(i) return ("S[%d]=%s-%s"):format(i.A,rk(i.B),rk(i.C)) end
+ops[14] = function(i) return ("S[%d]=%s*%s"):format(i.A,rk(i.B),rk(i.C)) end
+ops[15] = function(i) return ("S[%d]=%s/%s"):format(i.A,rk(i.B),rk(i.C)) end
+ops[16] = function(i) return ("S[%d]=%s%%%s"):format(i.A,rk(i.B),rk(i.C)) end
+ops[17] = function(i) return ("S[%d]=%s^%s"):format(i.A,rk(i.B),rk(i.C)) end
+ops[18] = function(i) return ("S[%d]=-S[%d]"):format(i.A,i.B.i) end
+ops[19] = function(i) return ("S[%d]=not S[%d]"):format(i.A,i.B.i) end
+ops[20] = function(i) return ("S[%d]=#S[%d]"):format(i.A,i.B.i) end
 
 ops[21] = function(i) -- CONCAT
 	local t={}
@@ -108,7 +108,7 @@ ops[28] = function(i) -- CALL
 	if b==1 then
 		argStr=""
 	elseif b==0 then
-		argStr=("table.unpack(S,%d,top)"):format(a+1)
+		argStr=("_unpack(S,%d,top)"):format(a+1)
 	else
 		local t={}
 		for r=1,b-1 do t[r]=("S[%d]"):format(a+r) end
@@ -130,7 +130,7 @@ end
 ops[29] = function(i) -- TAILCALL
 	local b=i.B.i
 	if b==1 then return ("return S[%d]()"):format(i.A) end
-	if b==0 then return ("return S[%d](table.unpack(S,%d,top))"):format(i.A,i.A+1) end
+	if b==0 then return ("return S[%d](_unpack(S,%d,top))"):format(i.A,i.A+1) end
 	local t={}
 	for r=1,b-1 do t[r]=("S[%d]"):format(i.A+r) end
 	return ("return S[%d](%s)"):format(i.A,table.concat(t,","))
@@ -141,7 +141,7 @@ ops[30] = function(i) -- RETURN
 	if b==1 then return "return" end
 	if b==2 then return ("return S[%d]"):format(a) end
 	if b==0 then
-		return ("do local _r={} for _i=%d,top do _r[#_r+1]=S[_i] end return table.unpack(_r) end"):format(a)
+		return ("do local _r={} for _i=%d,top do _r[#_r+1]=S[_i] end return _unpack(_r) end"):format(a)
 	end
 	local t={}
 	for r=0,b-2 do t[r+1]=("S[%d]"):format(a+r) end
@@ -161,7 +161,7 @@ ops[33] = function(i) -- TFORLOOP
 	local c=i.C.i
 	local t={}
 	for r=1,c do t[r]=("S[%d]"):format(i.A+2+r) end
-	return ("do local _r={S[%d](S[%d],S[%d])} %s=table.unpack(_r,1,%d) if S[%d]~=nil then S[%d]=S[%d] else pc=pc+1 end end"):format(
+	return ("do local _r={S[%d](S[%d],S[%d])} %s=_unpack(_r,1,%d) if S[%d]~=nil then S[%d]=S[%d] else pc=pc+1 end end"):format(
 		i.A,i.A+1,i.A+2,table.concat(t,","),c,i.A+3,i.A+2,i.A+3)
 end
 
@@ -188,7 +188,7 @@ ops[37] = function(i) -- VARARG
 	end
 	local t={}
 	for r=0,b-1 do t[r+1]=("S[%d]"):format(a+r) end
-	return ("do %s=table.unpack(VA,1,%d) end"):format(table.concat(t,","),b)
+	return ("do %s=_unpack(VA,1,%d) end"):format(table.concat(t,","),b)
 end
 
 return ops
